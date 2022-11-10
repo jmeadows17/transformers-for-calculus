@@ -6,7 +6,7 @@ Any column header containing "srepr" can be ignored. These columns are for repro
 
 Some columns are empty. These are argument columns where the corresponding rule does not need that argument. Premises for example need no arguments.
 
-The final 5 columns (ignoring srepr) are the correct final equation followed by 4 alternative equations. The model must select between these options given the derivation.
+The final 5 columns (ignoring srepr) are the correct final equation followed by 4 alternative equations. The model must select between these 5 options given the derivation.
 
 IMPORTANT: The numbers in some argument columns correspond to equation indexes. For example, arg_51 might be 2. This corresponds to the eq_idx in that row.
 
