@@ -17,7 +17,7 @@ QUESTION: A row is a derivation. Do we simply ```[SEP]``` between each row eleme
 
 If you want to make sense of a row within the data:
 
-  1. Create a df with columns up to and including ```df['eq_6']```, including srepr columns. 
+  1. Create a df with columns up to and including ```df['eq_6']```, including srepr columns, but discarding the negative examples. 
   2. Select a row index e.g., i = 81
   3. Call ```reconstruct_derivation(df, i, True)```
 
