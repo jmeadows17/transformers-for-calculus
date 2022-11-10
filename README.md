@@ -19,6 +19,6 @@ If you want to make sense of a row within the data:
 
   1. Create a df with columns up to and including ```df['eq_6']```, including srepr columns. 
   2. Select a row index e.g., i = 81
-  3. Call reconstruct_derivation(df, i, True)
+  3. Call ```reconstruct_derivation(df, i, True)```
 
 This should nicely display the derivation including annotations and equations, for easy comparison with row i.
