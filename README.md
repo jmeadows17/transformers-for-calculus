@@ -21,6 +21,6 @@ This should nicely display the derivation including annotations and equations, f
 
 
 
-IMPORTANT: The numbers in some argument columns correspond to equation indexes. For example, ```arg_51``` might be 2. This corresponds to the eq_idx in that row.
+IMPORTANT: The numbers in some argument columns correspond to equation indexes. For example, ```arg_51``` might be 2. This corresponds to the eq_idx_2 in that row.
 
 QUESTION: A row is a derivation. Do we simply ```[SEP]``` between each row element? Or do we ```[SEP]``` between STEPS within the row (e.g., between ```eq_idx_1``` and ```eq_idx_2```)?
