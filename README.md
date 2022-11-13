@@ -4,7 +4,7 @@ The example data correponds to the Next Equation Selection task (https://www.ove
 
 Each row of the data is a derivation comprising 6 total steps.
 
-Any column header containing ```srepr``` can be ignored. These columns are for reproducing the derivations in sympy for future interventions.
+Any column header containing ```srepr``` should be ignored. These columns are for reproducing the derivations in sympy for future interventions.
 
 Some columns are empty. These are argument columns where the corresponding rule does not need that argument. Premises for example need no arguments.
 
