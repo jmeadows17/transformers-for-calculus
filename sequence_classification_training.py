@@ -16,9 +16,9 @@ class Experiment:
         self.tokenizer = AutoTokenizer.from_pretrained(model)
         self.dataset = self.process_dataset(dataset_path)
         self.tokenized_datasets = self.dataset.map(self.tokenize_function, batched=True)
-        self.model = AutoModelForSequenceClassification.from_pretrained(model, num_labels=1)
+        self.model = AutoModelForSequenceClassification.from_pretrained(model, num_labels=2)
         self.metric = evaluate.load("f1")
-        self.training_args = TrainingArguments(output_dir="output", evaluation_strategy="epoch", num_train_epochs = epochs, learning_rate = learning_rate, per_device_train_batch_size = batch_size)
+        self.training_args = TrainingArguments(output_dir="output", logging_steps = 1000, evaluation_strategy="steps", eval_steps = 1000, num_train_epochs = epochs, learning_rate = learning_rate, per_device_train_batch_size = batch_size)
 
     def process_dataset(self, dataset_path):
         #convert dataset into json for dataset loader
@@ -31,11 +31,12 @@ class Experiment:
             candidate = [example["derivation"][equation_id][0] for equation_id in positive_ids]
             context = [example["derivation"][equation_id][0] for equation_id in list(set(range(0,len(example["derivation"]))).difference(set(positive_ids)))]
             input_text = " ".join(context) + " [SEP] " + " ".join(candidate)
-            formatted_examples.append({"text": input_text, "label": 1.0})
+            formatted_examples.append({"text": input_text, "label": 1})
             #create an entry for each negative example
             for negative in example["negatives"]:
                 input_text = " ".join(context) + " [SEP] " + negative
-                formatted_examples.append({"text": input_text, 'label': 0.0})
+                formatted_examples.append({"text": input_text, 'label': 0})
+                break
         #split randomly between train, dev, and test set
         dataset = Dataset.from_list(formatted_examples)
         dataset_split = dataset.train_test_split(test_size=0.2)
@@ -47,7 +48,8 @@ class Experiment:
     def compute_metrics(self, eval_pred):
         logits, labels = eval_pred
         predictions = np.argmax(logits, axis=-1)
-        return self.metric.compute(predictions=predictions, references=labels)
+        score = self.metric.compute(predictions=predictions, references=labels)
+        return score
 
     def train_and_eval(self):
 
