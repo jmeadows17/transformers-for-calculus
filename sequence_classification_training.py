@@ -17,8 +17,8 @@ class Experiment:
         self.dataset = self.process_dataset(dataset_path)
         self.tokenized_datasets = self.dataset.map(self.tokenize_function, batched=True)
         self.model = AutoModelForSequenceClassification.from_pretrained(model, num_labels=1)
-        self.metric = evaluate.load("accuracy")
-        self.training_args = TrainingArguments(output_dir="test_trainer", evaluation_strategy="epoch")
+        self.metric = evaluate.load("f1")
+        self.training_args = TrainingArguments(output_dir="output", evaluation_strategy="epoch", num_train_epochs = 3.0, learning_rate = 5e-5, per_device_train_batch_size = 8)
 
     def process_dataset(self, dataset_path):
         #convert dataset into json for dataset loader
@@ -39,7 +39,6 @@ class Experiment:
         #split randomly between train, dev, and test set
         dataset = Dataset.from_list(formatted_examples)
         dataset_split = dataset.train_test_split(test_size=0.2)
-        
         return dataset_split
 
     def tokenize_function(self, examples):
