@@ -9,7 +9,7 @@ from transformers import AutoTokenizer, AutoConfig, AutoModelForSequenceClassifi
     
 class Experiment:
 
-    def __init__(self, learning_rate, model, batch_size, dataset_path):
+    def __init__(self, learning_rate, model, epochs, batch_size, dataset_path):
         self.model_name = model
         self.dataset_path = dataset_path
         self.learning_rate = learning_rate
@@ -18,7 +18,7 @@ class Experiment:
         self.tokenized_datasets = self.dataset.map(self.tokenize_function, batched=True)
         self.model = AutoModelForSequenceClassification.from_pretrained(model, num_labels=1)
         self.metric = evaluate.load("f1")
-        self.training_args = TrainingArguments(output_dir="output", evaluation_strategy="epoch", num_train_epochs = 3.0, learning_rate = 5e-5, per_device_train_batch_size = 8)
+        self.training_args = TrainingArguments(output_dir="output", evaluation_strategy="epoch", num_train_epochs = epochs, learning_rate = learning_rate, per_device_train_batch_size = batch_size)
 
     def process_dataset(self, dataset_path):
         #convert dataset into json for dataset loader
@@ -67,9 +67,11 @@ if __name__ == '__main__':
                     help="Which dataset to use")
     parser.add_argument("--model", type=str, default="bert-base-uncased", nargs="?",
                     help="Which model to use")
-    parser.add_argument("--batch_size", type=int, default=128, nargs="?",
+    parser.add_argument("--batch_size", type=int, default=8, nargs="?",
                     help="Batch size.")
-    parser.add_argument("--lr", type=float, default=50, nargs="?",
+    parser.add_argument("--epochs", type=float, default=3.0, nargs="?",
+                    help="Batch size.")
+    parser.add_argument("--lr", type=float, default=5e-5, nargs="?",
                     help="Learning rate.")
 
     args = parser.parse_args()
@@ -81,7 +83,7 @@ if __name__ == '__main__':
     torch.manual_seed(seed)
     if torch.cuda.is_available:
         torch.cuda.manual_seed_all(seed)
-    experiment = Experiment(learning_rate = args.lr, batch_size = args.batch_size, model = args.model, dataset_path = data_path)
+    experiment = Experiment(learning_rate = args.lr, batch_size = args.batch_size, epochs = args.epochs, model = args.model, dataset_path = data_path)
     experiment.train_and_eval()
                 
 
