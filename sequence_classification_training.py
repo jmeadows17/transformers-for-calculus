@@ -28,13 +28,13 @@ class Experiment:
         for example in tqdm(d_json, desc="Loading Dataset"):
             #create an entry for each positive example
             positive_ids = list(np.array(example["positive_idxs"]) - 1)
-            candidate = [example["derivation"][equation_id][0] for equation_id in positive_ids]
-            context = [example["derivation"][equation_id][0] for equation_id in list(set(range(0,len(example["derivation"]))).difference(set(positive_ids)))]
-            input_text = " ".join(context) + " [SEP] " + " ".join(candidate)
+            candidate = [example["derivation"][equation_id][1] for equation_id in positive_ids]
+            context = (str(example['derivation'][:-1]) + ' [SEP] ' + str(example['derivation'][-1][0])).replace('[[','[').replace(']]',']').replace('\\\\','\\')
+            input_text = context + " [SEP] " + " ".join(candidate)
             formatted_examples.append({"text": input_text, "label": 1})
             #create an entry for each negative example
             for negative in example["negatives"]:
-                input_text = " ".join(context) + " [SEP] " + negative
+                input_text = context + " [SEP] " + negative
                 formatted_examples.append({"text": input_text, 'label': 0})
                 break
         #split randomly between train, dev, and test set
