@@ -37,7 +37,7 @@ class Experiment:
                 input_text = context + " [SEP] " + negative
                 formatted_examples.append({"text": input_text, 'label': 0})
                 break
-        print("Data example", formatted_examples[0])
+        print("Data examples", formatted_examples[:4])
         #split randomly between train, dev, and test set
         dataset = Dataset.from_list(formatted_examples)
         dataset_split = dataset.train_test_split(test_size=0.2)
@@ -49,6 +49,9 @@ class Experiment:
     def compute_metrics(self, eval_pred):
         logits, labels = eval_pred
         predictions = np.argmax(logits, axis=-1)
+        majority_class_preds = [1 for pred in predictions]
+        majority_baseline_score = self.metric.compute(predictions=majority_class_preds, references=labels)
+        print("majority_class_baseline:", majority_baseline_score
         score = self.metric.compute(predictions=predictions, references=labels)
         return score
 
