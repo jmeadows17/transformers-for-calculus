@@ -9,18 +9,26 @@ from transformers import AutoTokenizer, AutoConfig, AutoModelForSequenceClassifi
     
 class Experiment:
 
-    def __init__(self, learning_rate, model, epochs, batch_size, dataset_path):
+    def __init__(self, learning_rate, model, epochs, batch_size, neg, dataset_path):
         self.model_name = model
         self.dataset_path = dataset_path
         self.learning_rate = learning_rate
         self.tokenizer = AutoTokenizer.from_pretrained(model)
-        self.dataset = self.process_dataset(dataset_path)
+        self.dataset = self.process_dataset(dataset_path, neg)
         self.tokenized_datasets = self.dataset.map(self.tokenize_function, batched=True)
         self.model = AutoModelForSequenceClassification.from_pretrained(model, num_labels=2)
         self.metric = evaluate.load("glue", "mrpc")
-        self.training_args = TrainingArguments(output_dir="output", logging_steps = 500, evaluation_strategy="steps", eval_steps = 500, num_train_epochs = epochs, learning_rate = learning_rate, per_device_train_batch_size = batch_size)
+        self.training_args = TrainingArguments(
+                output_dir="output", 
+                logging_steps = 500, 
+                evaluation_strategy="steps", 
+                eval_steps = 500, 
+                num_train_epochs = epochs, 
+                learning_rate = learning_rate, 
+                per_device_train_batch_size = batch_size
+                )
 
-    def process_dataset(self, dataset_path):
+    def process_dataset(self, dataset_path, neg):
         #convert dataset into json for dataset loader
         d_file = open(dataset_path, 'r')
         d_json = json.load(d_file)
@@ -33,10 +41,13 @@ class Experiment:
             input_text = context + " [SEP] " + " ".join(candidate)
             formatted_examples.append({"text": input_text, "label": 1})
             #create an entry for each negative example
+            count_neg = 0
             for negative in example["negatives"]:
+                if count_neg == neg:
+                    break
                 input_text = context + " [SEP] " + negative
                 formatted_examples.append({"text": input_text, 'label': 0})
-                break
+                count_neg += 1
         print("Data examples", formatted_examples[:4])
         #split randomly between train, dev, and test set
         dataset = Dataset.from_list(formatted_examples)
@@ -56,15 +67,13 @@ class Experiment:
         return score
 
     def train_and_eval(self):
-
         trainer = Trainer(
             model = self.model,
             args = self.training_args,
             train_dataset = self.tokenized_datasets["train"],
             eval_dataset = self.tokenized_datasets["test"],
-            compute_metrics = self.compute_metrics,
+            compute_metrics = self.compute_metrics
         )
-
         trainer.train()
 
 if __name__ == '__main__':
@@ -79,6 +88,8 @@ if __name__ == '__main__':
                     help="Batch size.")
     parser.add_argument("--lr", type=float, default=5e-5, nargs="?",
                     help="Learning rate.")
+    parser.add_argument("-neg", type=int, default=1, nargs="?",
+                    help="Max number of negative examples")
 
     args = parser.parse_args()
     dataset = args.dataset
@@ -89,7 +100,7 @@ if __name__ == '__main__':
     torch.manual_seed(seed)
     if torch.cuda.is_available:
         torch.cuda.manual_seed_all(seed)
-    experiment = Experiment(learning_rate = args.lr, batch_size = args.batch_size, epochs = args.epochs, model = args.model, dataset_path = data_path)
+    experiment = Experiment(learning_rate = args.lr, batch_size = args.batch_size, neg = args.neg, epochs = args.epochs, model = args.model, dataset_path = data_path)
     experiment.train_and_eval()
                 
 
