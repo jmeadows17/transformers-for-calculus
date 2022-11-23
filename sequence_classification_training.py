@@ -100,7 +100,14 @@ if __name__ == '__main__':
     torch.manual_seed(seed)
     if torch.cuda.is_available:
         torch.cuda.manual_seed_all(seed)
-    experiment = Experiment(learning_rate = args.lr, batch_size = args.batch_size, neg = args.neg, epochs = args.epochs, model = args.model, dataset_path = data_path)
+    experiment = Experiment(
+            learning_rate = args.lr, 
+            batch_size = args.batch_size, 
+            neg = args.neg, 
+            epochs = args.epochs, 
+            model = args.model, 
+            dataset_path = data_path
+            )
     experiment.train_and_eval()
                 
 
