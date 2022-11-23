@@ -19,12 +19,12 @@ class Experiment:
         self.model = AutoModelForSequenceClassification.from_pretrained(model, num_labels=2)
         self.metric = evaluate.load("glue", "mrpc")
         self.training_args = TrainingArguments(
-                output_dir="output", 
-                logging_steps = 500, 
-                evaluation_strategy="steps", 
-                eval_steps = 500, 
-                num_train_epochs = epochs, 
-                learning_rate = learning_rate, 
+                output_dir="output/"+self.model_name,
+                logging_steps = 500,
+                evaluation_strategy="steps",
+                eval_steps = 500,
+                num_train_epochs = epochs,
+                learning_rate = learning_rate,
                 per_device_train_batch_size = batch_size
                 )
 
