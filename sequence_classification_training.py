@@ -51,7 +51,7 @@ class Experiment:
         predictions = np.argmax(logits, axis=-1)
         majority_class_preds = [1 for pred in predictions]
         majority_baseline_score = self.metric.compute(predictions=majority_class_preds, references=labels)
-        print("majority_class_baseline:", majority_baseline_score
+        print("majority_class_baseline:", majority_baseline_score)
         score = self.metric.compute(predictions=predictions, references=labels)
         return score
 
