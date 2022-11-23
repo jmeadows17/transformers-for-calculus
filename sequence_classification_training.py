@@ -17,7 +17,7 @@ class Experiment:
         self.dataset = self.process_dataset(dataset_path)
         self.tokenized_datasets = self.dataset.map(self.tokenize_function, batched=True)
         self.model = AutoModelForSequenceClassification.from_pretrained(model, num_labels=2)
-        self.metric = evaluate.load("accuracy")
+        self.metric = evaluate.load("glue", "mrpc")
         self.training_args = TrainingArguments(output_dir="output", logging_steps = 500, evaluation_strategy="steps", eval_steps = 500, num_train_epochs = epochs, learning_rate = learning_rate, per_device_train_batch_size = batch_size)
 
     def process_dataset(self, dataset_path):
