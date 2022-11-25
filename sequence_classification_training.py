@@ -85,10 +85,10 @@ if __name__ == '__main__':
     parser.add_argument("--batch_size", type=int, default=8, nargs="?",
                     help="Batch size.")
     parser.add_argument("--epochs", type=float, default=3.0, nargs="?",
-                    help="Batch size.")
+                    help="Num epochs.")
     parser.add_argument("--lr", type=float, default=5e-5, nargs="?",
                     help="Learning rate.")
-    parser.add_argument("-neg", type=int, default=1, nargs="?",
+    parser.add_argument("--neg", type=int, default=1, nargs="?",
                     help="Max number of negative examples")
 
     args = parser.parse_args()
