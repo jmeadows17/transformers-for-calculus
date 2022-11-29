@@ -37,7 +37,7 @@ class Experiment:
             #create an entry for each positive example
             positive_ids = list(np.array(example["positive_idxs"]) - 1)
             candidate = [example["derivation"][equation_id][1] for equation_id in positive_ids]
-            context = (str(example['derivation'][:-1]) + ' [SEP] ' + str(example['derivation'][-1][0])).replace('[[','[').replace(']]',']').replace('\\\\','\\')
+            context = (str(example['derivation'][:-1]) + ' [SEP] ' + str(example['derivation'][-1][0])).replace('[[','[').replace(']]',']').replace('\\\\','\\').replace("'","").replace("\\,","")
             input_text = context + " [SEP] " + " ".join(candidate)
             formatted_examples.append({"text": input_text, "label": 1})
             #create an entry for each negative example
