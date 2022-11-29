@@ -78,7 +78,7 @@ class Experiment:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", type=str, default="next_equation_selection_steps=2.json", nargs="?",
+    parser.add_argument("--dataset", type=str, default="next_equation_selection_steps=3.json", nargs="?",
                     help="Which dataset to use")
     parser.add_argument("--model", type=str, default="bert-base-uncased", nargs="?",
                     help="Which model to use")
