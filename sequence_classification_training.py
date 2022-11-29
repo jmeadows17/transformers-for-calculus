@@ -9,10 +9,11 @@ from transformers import AutoTokenizer, AutoConfig, AutoModelForSequenceClassifi
     
 class Experiment:
 
-    def __init__(self, learning_rate, model, epochs, batch_size, neg, dataset_path):
+    def __init__(self, learning_rate, model, epochs, batch_size, max_length, neg, dataset_path):
         self.model_name = model
         self.dataset_path = dataset_path
         self.learning_rate = learning_rate
+        self.max_length = max_length
         self.tokenizer = AutoTokenizer.from_pretrained(model)
         self.dataset = self.process_dataset(dataset_path, neg)
         self.tokenized_datasets = self.dataset.map(self.tokenize_function, batched=True)
@@ -37,7 +38,7 @@ class Experiment:
             #create an entry for each positive example
             positive_ids = list(np.array(example["positive_idxs"]) - 1)
             candidate = [example["derivation"][equation_id][1] for equation_id in positive_ids]
-            context = (str(example['derivation'][:-1]) + ' [SEP] ' + str(example['derivation'][-1][0])).replace('[[','[').replace(']]',']').replace('\\\\','\\')
+            context = (str(example['derivation'][:-1]) + ' [SEP] ' + str(example['derivation'][-1][0])).replace('[[','[').replace(']]',']').replace('\\\\','\\').replace("'","").replace("\\,","")
             input_text = context + " [SEP] " + " ".join(candidate)
             formatted_examples.append({"text": input_text, "label": 1})
             #create an entry for each negative example
@@ -55,7 +56,7 @@ class Experiment:
         return dataset_split
 
     def tokenize_function(self, examples):
-        return self.tokenizer(examples["text"], padding="max_length", truncation=True)
+        return self.tokenizer(examples["text"], padding="max_length", max_length = self.max_length, truncation=True)
 
     def compute_metrics(self, eval_pred):
         logits, labels = eval_pred
@@ -84,6 +85,8 @@ if __name__ == '__main__':
                     help="Which model to use")
     parser.add_argument("--batch_size", type=int, default=8, nargs="?",
                     help="Batch size.")
+    parser.add_argument("--max_length", type=int, default=256, nargs="?",
+                    help="Input Max Length.")
     parser.add_argument("--epochs", type=float, default=3.0, nargs="?",
                     help="Num epochs.")
     parser.add_argument("--lr", type=float, default=5e-5, nargs="?",
@@ -103,7 +106,8 @@ if __name__ == '__main__':
     experiment = Experiment(
             learning_rate = args.lr, 
             batch_size = args.batch_size, 
-            neg = args.neg, 
+            neg = args.neg,
+            max_length = args.max_length,
             epochs = args.epochs, 
             model = args.model, 
             dataset_path = data_path
