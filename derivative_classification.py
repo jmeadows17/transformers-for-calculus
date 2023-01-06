@@ -85,9 +85,9 @@ if __name__ == '__main__':
                     help="Batch size.")
     parser.add_argument("--max_length", type=int, default=256, nargs="?",
                     help="Input Max Length.")
-    parser.add_argument("--epochs", type=float, default=3.0, nargs="?",
+    parser.add_argument("--epochs", type=float, default=12.0, nargs="?",
                     help="Num epochs.")
-    parser.add_argument("--lr", type=float, default=5e-5, nargs="?",
+    parser.add_argument("--lr", type=float, default=5e-7, nargs="?",
                     help="Learning rate.")
     parser.add_argument("--neg", type=int, default=1, nargs="?",
                     help="Max number of negative examples")

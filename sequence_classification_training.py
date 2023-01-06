@@ -20,10 +20,10 @@ class Experiment:
         self.model = AutoModelForSequenceClassification.from_pretrained(model, num_labels=2)
         self.metric = evaluate.load("glue", "mrpc")
         self.training_args = TrainingArguments(
-                output_dir="output/"+self.model_name,
-                logging_steps = 500,
+                output_dir="output/"+dataset_path.split("/")[-1]+"_"+self.model_name,
+                logging_steps = 1000,
                 evaluation_strategy="steps",
-                eval_steps = 500,
+                eval_steps = 1000,
                 num_train_epochs = epochs,
                 learning_rate = learning_rate,
                 per_device_train_batch_size = batch_size
@@ -63,6 +63,8 @@ class Experiment:
         predictions = np.argmax(logits, axis=-1)
         majority_class_preds = [1 for pred in predictions]
         majority_baseline_score = self.metric.compute(predictions=majority_class_preds, references=labels)
+        print("Predictions", predictions[:10])
+        print("Gold", labels[:10])
         print("majority_class_baseline:", majority_baseline_score)
         score = self.metric.compute(predictions=predictions, references=labels)
         return score
@@ -79,7 +81,7 @@ class Experiment:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", type=str, default="next_equation_selection_steps=3.json", nargs="?",
+    parser.add_argument("--dataset", type=str, default="NES_steps=4.json", nargs="?",
                     help="Which dataset to use")
     parser.add_argument("--model", type=str, default="bert-base-uncased", nargs="?",
                     help="Which model to use")
@@ -87,9 +89,9 @@ if __name__ == '__main__':
                     help="Batch size.")
     parser.add_argument("--max_length", type=int, default=256, nargs="?",
                     help="Input Max Length.")
-    parser.add_argument("--epochs", type=float, default=3.0, nargs="?",
+    parser.add_argument("--epochs", type=float, default=12.0, nargs="?",
                     help="Num epochs.")
-    parser.add_argument("--lr", type=float, default=5e-5, nargs="?",
+    parser.add_argument("--lr", type=float, default=5e-7, nargs="?",
                     help="Learning rate.")
     parser.add_argument("--neg", type=int, default=1, nargs="?",
                     help="Max number of negative examples")
