@@ -21,9 +21,9 @@ class Experiment:
         self.metric = evaluate.load("glue", "mrpc")
         self.training_args = TrainingArguments(
                 output_dir="output/"+dataset_path.split("/")[-1]+"_"+self.model_name,
-                logging_steps = 1000,
+                logging_steps = 8000,
                 evaluation_strategy="steps",
-                eval_steps = 1000,
+                eval_steps = 8000,
                 num_train_epochs = epochs,
                 learning_rate = learning_rate,
                 per_device_train_batch_size = batch_size

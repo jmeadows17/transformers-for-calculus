@@ -20,10 +20,10 @@ class Experiment:
         self.model = AutoModelForSequenceClassification.from_pretrained(model, num_labels=2)
         self.metric = evaluate.load("glue", "mrpc")
         self.training_args = TrainingArguments(
-                output_dir="output/"+self.model_name,
-                logging_steps = 500,
+                output_dir="output/"+dataset_path.split("/")[-1]+"_"+self.model_name,
+                logging_steps = 8000,
                 evaluation_strategy="steps",
-                eval_steps = 500,
+                eval_steps = 8000,
                 num_train_epochs = epochs,
                 learning_rate = learning_rate,
                 per_device_train_batch_size = batch_size
@@ -77,7 +77,7 @@ class Experiment:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", type=str, default="next_equation_selection_steps=2.json", nargs="?",
+    parser.add_argument("--dataset", type=str, default="differentiation.json", nargs="?",
                     help="Which dataset to use")
     parser.add_argument("--model", type=str, default="bert-base-uncased", nargs="?",
                     help="Which model to use")
