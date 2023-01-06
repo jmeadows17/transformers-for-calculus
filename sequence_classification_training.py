@@ -21,12 +21,17 @@ class Experiment:
         self.metric = evaluate.load("glue", "mrpc")
         self.training_args = TrainingArguments(
                 output_dir="output/"+dataset_path.split("/")[-1]+"_"+self.model_name,
-                logging_steps = 8000,
+                logging_steps = 1000,
                 evaluation_strategy="steps",
-                eval_steps = 8000,
+                eval_steps = 1000,
+                save_steps = 1000,
                 num_train_epochs = epochs,
                 learning_rate = learning_rate,
-                per_device_train_batch_size = batch_size
+                per_device_train_batch_size = batch_size,
+                save_total_limit = 1,
+                save_strategy = "steps",
+                load_best_model_at_end = True,
+                metric_for_best_model = "f1"
                 )
 
     def process_dataset(self, dataset_path, neg):
@@ -78,6 +83,7 @@ class Experiment:
             compute_metrics = self.compute_metrics
         )
         trainer.train()
+        trainer.save_model()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
