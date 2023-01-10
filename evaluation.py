@@ -16,10 +16,11 @@ class Experiment:
         self.model_name = model
         self.dataset_path = dataset_path
         self.learning_rate = learning_rate
-        self.tokenizer = AutoTokenizer.from_pretrained(model)# MANUALLY ENTER THE TOKENIZER NAME
+        self.tokenizer = AutoTokenizer.from_pretrained("tbs17/MathBERT")# MANUALLY ENTER THE TOKENIZER NAME
         self.dataset = self.process_dataset(dataset_path, neg)
+        self.max_len = 256
         self.tokenized_datasets = self.dataset.map(self.tokenize_function, batched=True)
-        self.model = AutoModelForSequenceClassification.from_pretrained(model, num_labels=2).to(device)
+        self.model = AutoModelForSequenceClassification.from_pretrained(model).to(device)
         self.metric = evaluate.load("glue", "mrpc")
         self.training_args = TrainingArguments(
                 output_dir= os.getcwd() + "\\output",
@@ -58,7 +59,7 @@ class Experiment:
         return dataset_split
 
     def tokenize_function(self, examples):
-        return self.tokenizer(examples["text"], padding="max_length", truncation=True)
+        return self.tokenizer(examples["text"], padding="max_length", max_length = self.max_len, truncation=True)
 
     def compute_metrics(self, eval_pred):
         logits, labels = eval_pred
@@ -82,8 +83,8 @@ class Experiment:
 
 if __name__ == '__main__':
     
-    model = os.getcwd() + "\\models\\NES_steps=2.json_roberta-base"
-    data_path = os.getcwd() + "\\data\\EVAL_NES_steps=2.json"
+    model = "./output/NES_steps=4.json_tbs17/MathBERT"
+    data_path = "./data/EVAL_NES_steps=2.json"
     
     
     #data_path = os.getcwd() + "\\data\\EVAL_NES_steps=3.json"
